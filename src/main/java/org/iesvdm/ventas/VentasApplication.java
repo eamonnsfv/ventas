@@ -10,7 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import java.util.Optional;
 
 import org.iesvdm.dao.ClienteDAO;
+import org.iesvdm.dao.ComercialDAO;
 import org.iesvdm.modelo.Cliente;
+import org.iesvdm.modelo.Comercial;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 
@@ -21,6 +23,9 @@ public class VentasApplication implements CommandLineRunner {
 
 	@Autowired 
 	private ClienteDAO clienteDAO;
+
+	@Autowired
+	private ComercialDAO comercialDAO;
 
 	public static void main(String[] args) {
 		SpringApplication.run(VentasApplication.class, args);
@@ -55,6 +60,27 @@ public class VentasApplication implements CommandLineRunner {
 			log.info("Cliente con id {} restaurado a {}", id, cliente.get());
 		} else {	
 			log.info("No encontradó cliente con id {}", id);
+		}
+
+		log.info("***********************************");
+		log.info("* Prueba de arranque ComercialDAO *");
+		log.info("***********************************");
+
+		comercialDAO.getAll().forEach(comercial -> log.info("Comercial: {}", comercial));
+		int comercialId = 1;
+		Optional<Comercial> comercial = comercialDAO.find(comercialId);
+
+		if (comercial.isPresent()) {
+			String nombreOld = comercial.get().getNombre();
+			comercial.get().setNombre("Jose M");
+			comercialDAO.update(comercial.get());
+			log.info("Comercial con id {} actualizado a {}", comercialId, comercial.get());
+
+			comercial.get().setNombre(nombreOld);
+			comercialDAO.update(comercial.get());
+			log.info("Comercial con id {} restaurado a {}", comercialId, comercial.get());
+		} else {
+			log.info("No encontrado comercial con id {}", comercialId);
 		}
 	}
 }
