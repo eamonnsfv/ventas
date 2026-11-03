@@ -16,4 +16,20 @@ public class ComercialService {
 	public List<Comercial> listAll() {
 		return comercialDAO.getAll();
 	}
+
+	public Comercial one(int id) {
+		return comercialDAO.find(id).orElse(null);
+	}
+
+	public void newComercial(Comercial comercial) {
+		comercialDAO.create(comercial);
+	}
+
+	public void replaceComercial(Comercial comercial) {
+		comercialDAO.update(comercial);
+	}
+
+	public void deleteComercial(int id) {
+		comercialDAO.delete(id);
+	}
 }

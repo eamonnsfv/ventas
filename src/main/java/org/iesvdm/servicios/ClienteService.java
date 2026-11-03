@@ -16,5 +16,21 @@ public class ClienteService {
     public List<Cliente> listAll() {
         return clienteDAO.getAll();
     }
+
+    public Cliente one(int id) {
+        return clienteDAO.find(id).orElse(null);
+    }
+
+    public void newCliente(Cliente cliente) {
+        clienteDAO.create(cliente);
+    }
+
+    public void replaceCliente(Cliente cliente) {
+        clienteDAO.update(cliente);
+    }
+
+    public void deleteCliente(int id) {
+        clienteDAO.delete(id);
+    }
     
 }

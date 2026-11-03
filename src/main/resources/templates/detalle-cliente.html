@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Detalle de cliente | Ventas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<main class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-12 col-lg-8">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h1 class="h2 mb-0">Detalle de cliente</h1>
+                <a class="btn btn-outline-secondary" th:href="@{/clientes}">Volver</a>
+            </div>
+            <div class="row g-3 bg-white border rounded p-4">
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Id</span><strong th:text="${cliente.id}">0</strong></div>
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Nombre</span><strong th:text="${cliente.nombre}">Nombre</strong></div>
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Primer apellido</span><strong th:text="${cliente.apellido1}">Apellido</strong></div>
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Segundo apellido</span><strong th:text="${cliente.apellido2 ?: '-'}">-</strong></div>
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Ciudad</span><strong th:text="${cliente.ciudad}">Ciudad</strong></div>
+                <div class="col-12 col-md-6"><span class="text-secondary d-block">Categoría</span><strong th:text="${cliente.categoría}">0</strong></div>
+            </div>
+            <div class="d-flex justify-content-end mt-3"><a class="btn btn-primary" th:href="@{/clientes/editar/{id}(id=${cliente.id})}">Editar cliente</a></div>
+        </div>
+    </div>
+</main>
+</body>
+</html>
