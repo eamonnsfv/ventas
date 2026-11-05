@@ -94,23 +94,21 @@ public class ClienteDAOImpl implements ClienteDAO {
 	 */
 	@Override
 	public Optional<Cliente> find(int id) {
-		
-		Cliente fab =  jdbcTemplate
-				.queryForObject("SELECT * FROM cliente WHERE id = ?"														
-								, (rs, rowNum) -> new Cliente(rs.getInt("id"),
-            						 						rs.getString("nombre"),
-            						 						rs.getString("apellido1"),
-            						 						rs.getString("apellido2"),
-            						 						rs.getString("ciudad"),
-            						 						rs.getInt("categoría")) 
-								, id
-								);
-		
-		if (fab != null) { 
-			return Optional.of(fab);}
-		else { 
+		List<Cliente> clientes = jdbcTemplate.query(
+				"SELECT * FROM cliente WHERE id = ?",
+				(rs, rowNum) -> new Cliente(rs.getInt("id"),
+						rs.getString("nombre"),
+						rs.getString("apellido1"),
+						rs.getString("apellido2"),
+						rs.getString("ciudad"),
+						rs.getInt("categoría")),
+				id);
+
+		if (clientes.isEmpty()) {
 			log.info("Cliente no encontrado.");
-			return Optional.empty(); }
+			return Optional.empty();
+		}
+		return Optional.of(clientes.get(0));
         
 	}
 	/**
