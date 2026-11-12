@@ -33,6 +33,7 @@ public class ClienteController {
     @GetMapping("/{id}")
     public String detalle(Model model, @PathVariable int id) {
         model.addAttribute("cliente", clienteService.one(id));
+        model.addAttribute("pedidos", clienteService.listPedidosByCliente(id));
         return "detalle-cliente";
     }
 

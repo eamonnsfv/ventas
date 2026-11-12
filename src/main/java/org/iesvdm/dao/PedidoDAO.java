@@ -11,6 +11,8 @@ import org.springframework.stereotype.Repository;
 public interface PedidoDAO {
 	public void create(Pedido pedido);
 	public List<Pedido> getAll();
+	public List<PedidoDetalle> findByComercialId(int comercialId);
+	public List<PedidoDetalle> findByClienteId(int clienteId);
 	public Optional<Pedido> find(int id);
 	public List<PedidoDetalle> getAllDetalles();
 	public Optional<PedidoDetalle> findDetalle(int id);

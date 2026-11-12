@@ -72,30 +72,38 @@ public class PedidoDAOImpl implements PedidoDAO {
 
 	@Override
 	public List<PedidoDetalle> getAllDetalles() {
-		List<PedidoDetalle> pedidos = jdbcTemplate.query("""
-				SELECT p.id, p.total, p.fecha,
-				       CONCAT_WS(' ', c.nombre, c.apellido1, c.apellido2) AS cliente_nombre,
-				       CONCAT_WS(' ', co.nombre, co.apellido1, co.apellido2) AS comercial_nombre
-				FROM pedido p
-				JOIN cliente c ON c.id = p.id_cliente
-				JOIN comercial co ON co.id = p.id_comercial
-				""", (rs, rowNum) -> mapPedidoDetalle(rs));
+		List<PedidoDetalle> pedidos = jdbcTemplate.query(selectPedidosConNombres(),
+				(rs, rowNum) -> mapPedidoDetalle(rs));
 
 		log.info("Devueltos {} detalles de pedidos.", pedidos.size());
 		return pedidos;
 	}
 
 	@Override
+	public List<PedidoDetalle> findByComercialId(int comercialId) {
+		List<PedidoDetalle> pedidos = jdbcTemplate.query(
+				selectPedidosConNombres() + " WHERE p.id_comercial = ?",
+				(rs, rowNum) -> mapPedidoDetalle(rs), comercialId);
+
+		log.info("Devueltos {} pedidos del comercial {}.", pedidos.size(), comercialId);
+		return pedidos;
+	}
+
+	@Override
+	public List<PedidoDetalle> findByClienteId(int clienteId) {
+		List<PedidoDetalle> pedidos = jdbcTemplate.query(
+				selectPedidosConNombres() + " WHERE p.id_cliente = ?",
+				(rs, rowNum) -> mapPedidoDetalle(rs), clienteId);
+
+		log.info("Devueltos {} pedidos del cliente {}.", pedidos.size(), clienteId);
+		return pedidos;
+	}
+
+	@Override
 	public Optional<PedidoDetalle> findDetalle(int id) {
-		List<PedidoDetalle> pedidos = jdbcTemplate.query("""
-				SELECT p.id, p.total, p.fecha,
-				       CONCAT_WS(' ', c.nombre, c.apellido1, c.apellido2) AS cliente_nombre,
-				       CONCAT_WS(' ', co.nombre, co.apellido1, co.apellido2) AS comercial_nombre
-				FROM pedido p
-				JOIN cliente c ON c.id = p.id_cliente
-				JOIN comercial co ON co.id = p.id_comercial
-				WHERE p.id = ?
-				""", (rs, rowNum) -> mapPedidoDetalle(rs), id);
+		List<PedidoDetalle> pedidos = jdbcTemplate.query(
+				selectPedidosConNombres() + " WHERE p.id = ?",
+				(rs, rowNum) -> mapPedidoDetalle(rs), id);
 
 		if (pedidos.isEmpty()) {
 			log.info("Detalle de pedido no encontrado.");
@@ -149,8 +157,21 @@ public class PedidoDAOImpl implements PedidoDAO {
 				resultSet.getInt("id"),
 				resultSet.getBigDecimal("total"),
 				fecha == null ? null : fecha.toLocalDate(),
+				resultSet.getInt("id_cliente"),
+				resultSet.getInt("id_comercial"),
 				resultSet.getString("cliente_nombre"),
 				resultSet.getString("comercial_nombre"));
+	}
+
+	private String selectPedidosConNombres() {
+		return """
+				SELECT p.id, p.total, p.fecha, p.id_cliente, p.id_comercial,
+				       CONCAT_WS(' ', c.nombre, c.apellido1, c.apellido2) AS cliente_nombre,
+				       CONCAT_WS(' ', co.nombre, co.apellido1, co.apellido2) AS comercial_nombre
+				FROM pedido p
+				JOIN cliente c ON c.id = p.id_cliente
+				JOIN comercial co ON co.id = p.id_comercial
+				""";
 	}
 
 	private void setFecha(PreparedStatement preparedStatement, int index, Pedido pedido)
