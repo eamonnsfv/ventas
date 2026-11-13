@@ -3,6 +3,7 @@ package org.iesvdm.controlador;
 import java.util.List;
 
 import org.iesvdm.modelo.Comercial;
+import org.iesvdm.modelo.PedidoDetalle;
 import org.iesvdm.servicios.ComercialService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -32,8 +33,11 @@ public class ComercialController {
 
 	@GetMapping("/{id}")
 	public String detalle(Model model, @PathVariable int id) {
+		List<PedidoDetalle> pedidos = comercialService.listPedidosByComercial(id);
 		model.addAttribute("comercial", comercialService.one(id));
-		model.addAttribute("pedidos", comercialService.listPedidosByComercial(id));
+		model.addAttribute("pedidos", pedidos);
+		model.addAttribute("estadisticas", comercialService.estadisticasPedidos(pedidos));
+		model.addAttribute("clientesPorTotal", comercialService.clientesOrdenadosPorTotalPedidos(pedidos));
 		return "detalle-comercial";
 	}
 

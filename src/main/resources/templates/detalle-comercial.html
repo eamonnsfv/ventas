@@ -24,18 +24,55 @@
             </div>
             <div class="d-flex justify-content-end mt-3"><a class="btn btn-primary" th:href="@{/comerciales/editar/{id}(id=${comercial.id})}">Editar comercial</a></div>
             <section class="mt-4">
+                <h2 class="h4">Estadísticas de pedidos</h2>
+                <div class="row g-3">
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white border rounded p-3">
+                            <span class="text-secondary d-block">Total de pedidos</span>
+                            <strong th:text="${estadisticas.totalPedidos}">0.00</strong>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6">
+                        <div class="bg-white border rounded p-3">
+                            <span class="text-secondary d-block">Media de pedidos</span>
+                            <strong th:text="${estadisticas.mediaPedidos}">0.00</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section class="mt-4">
                 <h2 class="h4">Pedidos del comercial</h2>
+                <div class="d-flex gap-3 mb-2" aria-label="Leyenda de colores">
+                    <span><span class="badge text-bg-success">&nbsp;</span> Pedido máximo</span>
+                    <span><span class="badge text-bg-warning">&nbsp;</span> Pedido mínimo</span>
+                </div>
                 <div class="table-responsive bg-white border rounded">
                     <table class="table table-striped mb-0">
                         <thead><tr><th>Id</th><th>Total</th><th>Fecha</th><th>Cliente</th></tr></thead>
                         <tbody>
-                            <tr th:each="pedido : ${pedidos}">
+                            <tr th:each="pedido : ${pedidos}"
+                                th:classappend="${pedido.total != null and pedido.total == estadisticas.maximoPedido} ? 'table-success' : (${pedido.total != null and pedido.total == estadisticas.minimoPedido} ? 'table-warning' : '')">
                                 <td th:text="${pedido.id}">0</td>
                                 <td th:text="${pedido.total}">0.00</td>
                                 <td th:text="${pedido.fecha ?: '-'}">-</td>
                                 <td><a th:href="@{/clientes/{id}(id=${pedido.clienteId})}" th:text="${pedido.clienteNombre}" target="_blank" rel="noopener">Cliente</a></td>
                             </tr>
                             <tr th:if="${#lists.isEmpty(pedidos)}"><td colspan="4" class="text-center">No hay pedidos.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            <section class="mt-4">
+                <h2 class="h4">Clientes por total de pedidos</h2>
+                <div class="table-responsive bg-white border rounded">
+                    <table class="table table-striped mb-0">
+                        <thead><tr><th>Cliente</th><th>Total de sus pedidos</th></tr></thead>
+                        <tbody>
+                            <tr th:each="cliente : ${clientesPorTotal}">
+                                <td><a th:href="@{/clientes/{id}(id=${cliente.clienteId})}" th:text="${cliente.clienteNombre}" target="_blank" rel="noopener">Cliente</a></td>
+                                <td th:text="${cliente.totalPedidos}">0.00</td>
+                            </tr>
+                            <tr th:if="${#lists.isEmpty(clientesPorTotal)}"><td colspan="2" class="text-center">No hay clientes con pedidos.</td></tr>
                         </tbody>
                     </table>
                 </div>
